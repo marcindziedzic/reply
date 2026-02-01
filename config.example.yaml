@@ -1,0 +1,66 @@
+claude:
+  api_key: sk-ant-...  # Claude API key from https://console.anthropic.com/
+  project_id: proj_... # Project ID from Claude Projects (optional, but recommended)
+  model: claude-sonnet-4-20250514
+
+gmail:
+  credentials_file: credentials.json  # OAuth client from Google Cloud Console
+  token_file: token.json              # Generated automatically after first login
+  max_threads: 50                     # Maximum number of threads to fetch
+  forwarding_addresses:               # Addresses that forward emails (e.g., contact forms)
+    - noreply@formspree.io
+    - notifications@forms.google.com
+    # Emails from these addresses are not grouped - each appears separately
+    # Responses are created as new messages (not reply)
+
+# Shared team resources (optional)
+# Download context, queries, and snippets from a team-hosted zip file
+# Run: python run.py --update-resources
+# shared_resources:
+#   url: "https://example.com/team-resources.zip"
+#
+# The zip file should contain:
+#   context/           # AI context files (instructions.md, tone_of_voice.md, etc.)
+#   queries/           # Prompt templates (response_system.txt, new_message.txt, etc.)
+#   snippets/          # Reusable text snippets
+
+# Download files on application startup (optional)
+# downloads:
+#   - url: "https://example.com/context/guidelines.md"
+#     target: "context/required/guidelines.md"  # target path
+#     overwrite: true                           # overwrite existing (default true)
+#   - url: "https://example.com/templates/email.md"
+#     target: "snippets/email.md"
+#     overwrite: false                          # don't overwrite if exists
+
+# User information for email signatures
+user:
+  variables:
+    name: "Your Name"
+    title: "Your Title"
+    company: "Your Company"
+    phone: "+1 234 567 890"
+    # These variables can be used in snippets with [variable_name] syntax
+
+# Tools for Claude (tool_use) - allow calling external APIs
+# tools:
+#   enabled: true                    # enable/disable all tools
+#   timeout: 30                      # default timeout in seconds
+#   max_tool_calls: 5                # max tool calls per request
+#
+#   tools:
+#     - name: check_order_status
+#       type: http
+#       description: "Check customer order status by order number"
+#       endpoint: "https://api.myshop.com/orders/{order_id}"
+#       method: GET
+#       headers:
+#         Authorization: "Bearer ${ORDER_API_KEY}"  # ${VAR} - environment variable
+#       input_schema:
+#         type: object
+#         properties:
+#           order_id:
+#             type: string
+#             description: "Order number (e.g., ORD-12345)"
+#         required:
+#           - order_id

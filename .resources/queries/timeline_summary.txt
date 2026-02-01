@@ -1,0 +1,10 @@
+Task: Create a concise summary of the thread in chronological timeline form.
+
+Response format:
+- For each message, provide the date, sender, and a 1-2 sentence summary
+- Use format: [DATE] SENDER: summary
+- Highlight key decisions, agreements, questions, and answers
+- End with a "KEY AGREEMENTS:" section with a bulleted list of the most important agreements
+
+=== EMAIL THREAD ===
+{thread_history}

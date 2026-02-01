@@ -1,0 +1,13 @@
+Task: Write a new email based on the context and instructions from the user.
+
+Response format:
+- Return only the email body (no subject line, no "Subject:", no headers)
+- Start with a greeting
+- End with a professional signature using the user information from settings
+
+=== NEW EMAIL ===
+Recipient: {recipient_email}
+Subject: {subject}
+
+Context/Instructions:
+{context}

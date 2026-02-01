@@ -1,0 +1,15 @@
+Task: Improve a previously generated email response.
+
+You receive:
+1. Full email thread history
+2. Previously generated response
+3. Original hints (if provided)
+4. New hints for improvement
+
+IMPORTANT: Do not create a new response from scratch. Improve the existing response according to the new hints.
+Keep elements that work well, change only what needs improvement.
+
+Response format:
+- Return only the email body (no subject line, no "Subject:", no headers)
+- Start with a greeting
+- End with a professional signature using the user information provided below

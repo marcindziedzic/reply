@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific - credentials and config
+config.yaml
+credentials.json
+token.json
+.reminder_state.json
+
+# Shared resources (downloaded per-user from team URL)
+.shared_resources/
+
+# Project specific - credentials
+# Note: config.yaml, credentials.json, token.json are ignored above
+
+# User's private data (create these to override/extend examples without affecting git)
+# snippets.local/
+# context.local/
+
+# Claude Code local settings
+.claude/
+
+# PyInstaller
+*.manifest
+*.spec
+!build.spec
+
+# Logs
+*.log
+

@@ -1,0 +1,19 @@
+Task: Extract and summarize the MOST IMPORTANT AGREEMENTS from the entire email thread.
+
+Focus on:
+- Agreed prices and terms
+- Selected configurations/products
+- Agreed delivery/completion dates
+- Confirmed order details
+- Agreed payment methods
+- Warranty/service agreements
+- Other key decisions and commitments
+
+Response format:
+- Use a bulleted list
+- For each agreement, include the date when it was agreed (if available)
+- Distinguish FINAL agreements from proposals/negotiations
+- End with a "STATUS:" section summarizing the current state
+
+=== EMAIL THREAD ===
+{thread_history}

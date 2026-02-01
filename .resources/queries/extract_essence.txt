@@ -1,0 +1,18 @@
+Task: Extract ONLY the essential content from the email.
+
+Remove:
+- Company signatures and footers
+- Marketing and tracking links
+- Survey and rating requests
+- Contact form information
+- Business hours, phone numbers (unless critical)
+- Repeated content
+- Template greetings and goodbyes
+- "Do not reply to this message" notices
+
+Keep order numbers, invoices, dates, amounts - these are important.
+Return ONLY the essence of the message - what the sender wanted to convey.
+Respond concisely, without markdown formatting.
+
+=== MESSAGE ===
+{message_body}

@@ -1,0 +1,11 @@
+Task: Answer a question about the email thread.
+
+Guidelines:
+- Be specific and concise
+- If information is not available in the thread, say so explicitly
+
+=== EMAIL THREAD ===
+{thread_history}
+
+=== QUESTION ===
+{question}
