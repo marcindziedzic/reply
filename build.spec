@@ -4,7 +4,7 @@
 block_cipher = None
 
 a = Analysis(
-    ['src/email_assistant/main.py'],
+    ['run.py'],
     pathex=[],
     binaries=[],
     datas=[],
