@@ -249,33 +249,56 @@ python run.py --update-resources
 #### Thread List (Main Screen)
 | Key | Action |
 |-----|--------|
-| `Enter` | Open selected thread |
+| `j/k` | Navigate threads |
+| `o` or `Enter` | Open selected thread |
+| `1-9` | Jump to thread by number |
+| `c` | Compose new email |
 | `r` | Refresh inbox |
+| `S` | Search threads |
+| `L` | Browse labels |
+| `R` | Open reminders |
+| `f` | Set reminder for thread |
+| `l` | Mark thread as read |
+| `d` | Delete thread |
 | `q` | Quit application |
-| `↑/↓` | Navigate threads |
-| `Page Up/Down` | Scroll page |
 
 #### Thread Detail
 | Key | Action |
 |-----|--------|
-| `r` | Reply to thread |
-| `n` | New email to sender |
-| `a` | Archive thread |
+| `j/↓` | Next message in thread |
+| `k/↑` | Previous message in thread |
+| `g` | Generate AI response |
+| `c` | Reply (compose with template) |
+| `s` | Extract summary from message |
+| `t` | Timeline summary of thread |
+| `u` | Extract key agreements |
+| `a` | Ask AI about thread |
+| `f` | Set/reschedule reminder |
+| `x` | Cancel reminder |
+| `l` | Mark as read with label |
 | `d` | Delete thread |
-| `p` | Set reminder (ping) |
-| `s` | Download attachments |
-| `Escape` | Back to list |
+| `b` or `Escape` | Back to list |
 
 #### Draft Editor
 | Key | Action |
 |-----|--------|
-| `/` | Open snippet picker |
-| `Ctrl+Enter` | Send email |
-| `Ctrl+G` | Generate AI response |
-| `Ctrl+R` | Regenerate response |
-| `Ctrl+E` | Extract thread essence |
-| `Ctrl+Q` | Ask question about thread |
-| `Escape` | Cancel/close |
+| `e` | Enter/exit edit mode |
+| `w` | Send email |
+| `W` | Send with reminder |
+| `L` | Send with label |
+| `s` | Save as draft |
+| `r` | Regenerate response |
+| `a` | Attach file |
+| `F2` | Insert snippet |
+| `F3` | Insert link |
+| `F4` | Insert image |
+| `b` or `Escape` | Back to thread |
+
+#### Edit Mode (in Draft Editor)
+| Key | Action |
+|-----|--------|
+| `Ctrl+S` | Save edits |
+| `Escape` | Discard edits |
 
 ### Context System
 
