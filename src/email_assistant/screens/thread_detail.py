@@ -726,7 +726,7 @@ class ThreadDetailScreen(ThreadDetailBase):
     """Unified screen for viewing email threads and reminders."""
 
     BINDINGS = [
-        Binding("f", "reminder", "Reminder"),
+        Binding("h", "reminder", "Reminder"),
         Binding("l", "mark_read", "Mark read"),
         Binding("d", "delete", "Delete"),
         Binding("x", "cancel_reminder", "Cancel reminder"),

@@ -70,7 +70,7 @@ class ClientsScreen(BaseListScreen[Thread]):
         Binding("S", "search", "Search"),
         Binding("L", "browse_labels", "Labels"),
         Binding("l", "mark_read", "Mark read"),
-        Binding("f", "set_reminder", "Reminder"),
+        Binding("h", "set_reminder", "Reminder"),
         Binding("d", "delete", "Delete"),
         Binding("r", "refresh", "Refresh"),
         Binding("q", "quit", "Quit"),

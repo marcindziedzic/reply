@@ -257,7 +257,7 @@ python run.py --update-resources
 | `S` | Search threads |
 | `L` | Browse labels |
 | `R` | Open reminders |
-| `f` | Set reminder for thread |
+| `h` | Set reminder for thread |
 | `l` | Mark thread as read |
 | `d` | Delete thread |
 | `q` | Quit application |
@@ -273,7 +273,7 @@ python run.py --update-resources
 | `t` | Timeline summary of thread |
 | `u` | Extract key agreements |
 | `a` | Ask AI about thread |
-| `f` | Set/reschedule reminder |
+| `h` | Set/reschedule reminder |
 | `x` | Cancel reminder |
 | `l` | Mark as read with label |
 | `d` | Delete thread |
