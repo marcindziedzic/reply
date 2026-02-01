@@ -52,11 +52,15 @@ class ToolDefinition:
     type: str = "http"  # http, custom
     # HTTP-specific settings
     endpoint: str = ""
-    method: str = "GET"
+    method: str = "GET"  # GET, POST, PUT, PATCH, DELETE
     headers: dict[str, str] = field(default_factory=dict)
     query_params: dict[str, str] = field(default_factory=dict)
     body_template: dict[str, Any] = field(default_factory=dict)
+    # Use input field as request body (for dynamic JSON from Claude)
+    body_from_input: str = ""
     response_template: str = ""
+    # JSONPath-like extraction from response (e.g., "$.data[0].name", "$.items[*].id")
+    response_extract: str = ""
     # Timeout for this specific tool (overrides global)
     timeout: Optional[int] = None
 
@@ -214,7 +218,9 @@ class Config:
                 headers=tool_data.get("headers", {}),
                 query_params=tool_data.get("query_params", {}),
                 body_template=tool_data.get("body_template", {}),
+                body_from_input=tool_data.get("body_from_input", ""),
                 response_template=tool_data.get("response_template", ""),
+                response_extract=tool_data.get("response_extract", ""),
                 timeout=tool_data.get("timeout"),
             ))
 

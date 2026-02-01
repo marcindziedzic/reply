@@ -49,13 +49,15 @@ user:
 #   max_tool_calls: 5                # max tool calls per request
 #
 #   tools:
+#     # GET example - fetch order status
 #     - name: check_order_status
 #       type: http
 #       description: "Check customer order status by order number"
 #       endpoint: "https://api.myshop.com/orders/{order_id}"
-#       method: GET
+#       method: GET                  # GET, POST, PUT, DELETE supported
 #       headers:
 #         Authorization: "Bearer ${ORDER_API_KEY}"  # ${VAR} - environment variable
+#       response_extract: "$.data.status"  # JSONPath to extract specific field
 #       input_schema:
 #         type: object
 #         properties:
@@ -64,3 +66,83 @@ user:
 #             description: "Order number (e.g., ORD-12345)"
 #         required:
 #           - order_id
+#
+#     # PUT example - update record
+#     - name: update_ticket_status
+#       type: http
+#       description: "Update support ticket status"
+#       endpoint: "https://api.helpdesk.com/tickets/{ticket_id}"
+#       method: PUT
+#       headers:
+#         Authorization: "Bearer ${HELPDESK_API_KEY}"
+#       body_template:
+#         status: "{new_status}"
+#         updated_by: "email-assistant"
+#       input_schema:
+#         type: object
+#         properties:
+#           ticket_id:
+#             type: string
+#             description: "Ticket ID"
+#           new_status:
+#             type: string
+#             enum: [open, pending, resolved, closed]
+#             description: "New status for the ticket"
+#         required: [ticket_id, new_status]
+#
+#     # DELETE example - cancel order
+#     - name: cancel_order
+#       type: http
+#       description: "Cancel a pending order"
+#       endpoint: "https://api.myshop.com/orders/{order_id}"
+#       method: DELETE
+#       headers:
+#         Authorization: "Bearer ${ORDER_API_KEY}"
+#       input_schema:
+#         type: object
+#         properties:
+#           order_id:
+#             type: string
+#             description: "Order number to cancel"
+#         required: [order_id]
+#
+#     # POST with dynamic body from Claude (body_from_input)
+#     - name: create_contact
+#       type: http
+#       description: "Create a new contact in CRM"
+#       endpoint: "https://api.hubspot.com/crm/v3/objects/contacts"
+#       method: POST
+#       headers:
+#         Authorization: "Bearer ${HUBSPOT_TOKEN}"
+#       body_from_input: "contact"  # Claude provides the entire body
+#       input_schema:
+#         type: object
+#         properties:
+#           contact:
+#             type: object
+#             description: "Contact data to create"
+#             properties:
+#               firstname:
+#                 type: string
+#                 description: "First name"
+#               lastname:
+#                 type: string
+#                 description: "Last name"
+#               email:
+#                 type: string
+#                 description: "Email address"
+#               company:
+#                 type: string
+#                 description: "Company name"
+#             required: [firstname, lastname, email]
+#         required: [contact]
+#
+#     # JSONPath extraction examples:
+#     # response_extract: "$.status"           - single field
+#     # response_extract: "$.data.user.name"   - nested field
+#     # response_extract: "$.items[0]"         - first array element
+#     # response_extract: "$.items[*].name"    - all names from array
+#
+#     # Body options:
+#     # body_template: { static template with {placeholders} }
+#     # body_from_input: "field_name"  - use Claude's input as body (dynamic JSON)
