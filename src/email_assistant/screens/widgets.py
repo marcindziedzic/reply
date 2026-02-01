@@ -541,6 +541,20 @@ class ContactsInput(Container):
         from textual.widgets import Input
         self.query_one(f"#{self._input_id}", Input).focus()
 
+    def _get_current_query(self, value: str) -> tuple[str, str]:
+        """Extract the current query (part after last comma) from input value.
+
+        Returns:
+            Tuple of (prefix to keep, current query to search).
+            prefix includes everything up to and including the last comma.
+        """
+        if "," in value:
+            last_comma = value.rfind(",")
+            prefix = value[:last_comma + 1]
+            query = value[last_comma + 1:].strip()
+            return prefix, query
+        return "", value.strip()
+
     def on_input_changed(self, event) -> None:
         """Handle input changes - trigger contact search."""
         from textual.widgets import Input
@@ -552,7 +566,8 @@ class ContactsInput(Container):
             self._skip_next_search = False
             return
 
-        query = event.value.strip()
+        # Get only the part after the last comma for searching
+        prefix, query = self._get_current_query(event.value)
 
         # Need at least 3 characters to search
         if len(query) < 3:
@@ -610,8 +625,13 @@ class ContactsInput(Container):
         if isinstance(event.item, ContactListItem):
             # Skip next search triggered by value change
             self._skip_next_search = True
-            # Set the email in the input
-            self.value = event.item.contact.email
+            # Preserve any emails before the last comma
+            prefix, _ = self._get_current_query(self.value)
+            # Set the email in the input (append to prefix if exists)
+            if prefix:
+                self.value = f"{prefix} {event.item.contact.email}"
+            else:
+                self.value = event.item.contact.email
             self._hide_suggestions()
             # Move focus back to input
             self.focus()

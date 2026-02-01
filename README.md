@@ -273,6 +273,7 @@ python run.py --update-resources
 | `t` | Timeline summary of thread |
 | `u` | Extract key agreements |
 | `a` | Ask AI about thread |
+| `f` | Forward email |
 | `h` | Set/reschedule reminder |
 | `x` | Cancel reminder |
 | `l` | Mark as read with label |

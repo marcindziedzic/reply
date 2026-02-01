@@ -726,6 +726,7 @@ class ThreadDetailScreen(ThreadDetailBase):
     """Unified screen for viewing email threads and reminders."""
 
     BINDINGS = [
+        Binding("f", "forward", "Forward"),
         Binding("h", "reminder", "Reminder"),
         Binding("l", "mark_read", "Mark read"),
         Binding("d", "delete", "Delete"),
@@ -843,3 +844,22 @@ class ThreadDetailScreen(ThreadDetailBase):
                 self._run_background_task(do_set_reminder, msg, "Reminder failed")
 
         self.app.push_screen(RescheduleDialog(), handle_result)
+
+    def action_forward(self) -> None:
+        """Forward the current thread to other recipients."""
+        from .dialogs import ForwardDialog
+
+        if not self.thread.messages:
+            self.notify("No messages to forward", severity="warning")
+            return
+
+        def handle_result(result: Optional[str]) -> None:
+            if result:
+                app: "EmailAssistantApp" = self.app  # type: ignore
+                app.open_forward_screen(
+                    self.thread,
+                    self.user_email,
+                    result,  # comma-separated recipients
+                )
+
+        self.app.push_screen(ForwardDialog(), handle_result)

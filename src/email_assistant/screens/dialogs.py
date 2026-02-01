@@ -1564,6 +1564,83 @@ class NewMessageDialog(ModalScreen[Optional[tuple[str, str]]]):
         self.dismiss(None)
 
 
+class ForwardDialog(ModalScreen[Optional[str]]):
+    """Dialog for forwarding an email - get recipient(s).
+
+    Returns comma-separated recipient emails or None if cancelled.
+    """
+
+    BINDINGS = [
+        Binding("escape", "cancel", "Cancel"),
+    ]
+
+    CSS = """
+    ForwardDialog {
+        align: center middle;
+    }
+
+    #forward-dialog {
+        width: 70;
+        height: auto;
+        max-height: 20;
+        background: $surface;
+        border: solid $primary;
+        padding: 1 2;
+    }
+
+    #forward-title {
+        text-style: bold;
+        margin-bottom: 1;
+    }
+
+    #forward-label {
+        margin-bottom: 0;
+    }
+
+    #forward-hint {
+        color: $text-muted;
+        text-align: center;
+        margin-top: 1;
+    }
+    """
+
+    def compose(self) -> ComposeResult:
+        """Compose the dialog."""
+        with Vertical(id="forward-dialog"):
+            yield Static("Forward email", id="forward-title")
+            yield Label("To (comma-separated for multiple):", id="forward-label")
+            yield ContactsInput(
+                placeholder="e.g. alice@example.com, bob@example.com",
+                input_id="forward-recipient-input",
+            )
+            yield Static("[Enter] forward  [Esc] cancel", id="forward-hint")
+
+    def on_mount(self) -> None:
+        """Handle mount."""
+        self.query_one(ContactsInput).focus()
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        """Handle input submission."""
+        if event.input.id == "forward-recipient-input":
+            self._submit()
+
+    def _submit(self) -> None:
+        """Submit the dialog."""
+        contacts_input = self.query_one(ContactsInput)
+        recipients = contacts_input.value.strip()
+
+        if not recipients:
+            self.notify("Enter at least one recipient", severity="warning")
+            contacts_input.focus()
+            return
+
+        self.dismiss(recipients)
+
+    def action_cancel(self) -> None:
+        """Cancel the dialog."""
+        self.dismiss(None)
+
+
 class AttachFileDialog(ModalScreen[Optional[str]]):
     """Dialog for attaching a file by path."""
 

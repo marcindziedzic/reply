@@ -9,7 +9,7 @@ from .screens.loading import LoadingScreen
 
 # Heavy imports are deferred to avoid slow startup
 if TYPE_CHECKING:
-    from .models import Thread
+    from .models import Message, Thread
     from .services.reminder_service import Reminder
 
 
@@ -104,3 +104,81 @@ class EmailAssistantApp(App):
         screen.subject = subject
 
         self.push_screen(screen)
+
+    def open_forward_screen(
+        self,
+        thread: "Thread",
+        user_email: str,
+        recipients: str,
+    ) -> None:
+        """Open draft screen for forwarding an email.
+
+        Args:
+            thread: The thread to forward.
+            user_email: Current user's email address.
+            recipients: Comma-separated recipient email addresses.
+        """
+        from .models import Thread as ThreadModel
+        from .screens.draft import DraftScreen
+
+        # Get the last message to forward
+        if not thread.messages:
+            return
+
+        last_message = thread.messages[-1]
+
+        # Format the forwarded message content
+        forward_content = self._format_forward_content(last_message)
+
+        # Create subject with "Fwd: " prefix
+        subject = thread.subject
+        if not subject.lower().startswith("fwd:"):
+            subject = f"Fwd: {subject}"
+
+        # Create a dummy thread for the forward
+        dummy_thread = ThreadModel(
+            id="__forward__",
+            subject=subject,
+            messages=[],
+        )
+
+        # Open DraftScreen in forward mode
+        screen = DraftScreen(
+            dummy_thread,
+            user_email,
+            is_forwarded=True,  # This enables recipient/subject inputs
+            initial_content=forward_content,
+        )
+        # Pre-fill recipient and subject
+        screen.recipient_email = recipients
+        screen.subject = subject
+
+        self.push_screen(screen)
+
+    def _format_forward_content(self, message: "Message") -> str:
+        """Format the forwarded message content with headers.
+
+        Args:
+            message: The message to format for forwarding.
+
+        Returns:
+            Formatted string with forward headers and original message body.
+        """
+        from .models import Message
+
+        # Format date nicely
+        date_str = message.date.strftime("%a, %b %d, %Y at %I:%M %p") if message.date else "Unknown"
+
+        # Build forwarded message header
+        lines = [
+            "",
+            "---------- Forwarded message ---------",
+            f"From: {message.sender} <{message.sender_email}>",
+            f"Date: {date_str}",
+            f"Subject: {message.subject}",
+            f"To: {message.recipient}",
+            "",
+            message.body or "",
+        ]
+
+        return "\n".join(lines)
