@@ -8,6 +8,7 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any, Optional, Union
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
 
 from ..config import ToolDefinition, ToolsConfig, get_config
 
@@ -236,12 +237,23 @@ class ToolService:
             elif isinstance(value, dict):
                 result[key] = self._interpolate_dict(value, inputs)
             elif isinstance(value, list):
-                result[key] = [
-                    self._interpolate_string(v, inputs) if isinstance(v, str) else v
-                    for v in value
-                ]
+                result[key] = self._interpolate_list(value, inputs)
             else:
                 result[key] = value
+        return result
+
+    def _interpolate_list(self, template: list, inputs: dict[str, Any]) -> list:
+        """Recursively interpolate a list template."""
+        result = []
+        for item in template:
+            if isinstance(item, str):
+                result.append(self._interpolate_string(item, inputs))
+            elif isinstance(item, dict):
+                result.append(self._interpolate_dict(item, inputs))
+            elif isinstance(item, list):
+                result.append(self._interpolate_list(item, inputs))
+            else:
+                result.append(item)
         return result
 
     def _execute_http_tool_sync(
@@ -262,9 +274,10 @@ class ToolService:
         # Add query parameters if configured
         if tool.query_params:
             query = self._interpolate_dict(tool.query_params, inputs)
-            query_string = "&".join(f"{k}={v}" for k, v in query.items() if v)
-            if query_string:
-                url = f"{url}?{query_string}"
+            # Filter empty values and URL-encode
+            query_filtered = {k: v for k, v in query.items() if v}
+            if query_filtered:
+                url = f"{url}?{urlencode(query_filtered)}"
 
         # Build headers
         headers = {"User-Agent": "EmailAssistant/1.0"}

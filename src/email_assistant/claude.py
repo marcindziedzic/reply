@@ -180,8 +180,8 @@ class ClaudeClient:
                 "messages": messages,
             }
 
-            # Add tools only on first iteration or if we have tools
-            if tools and iteration == 0:
+            # Add tools on all iterations so Claude can make multiple tool calls
+            if tools:
                 api_kwargs["tools"] = tools
 
             response = client.messages.create(**api_kwargs)
@@ -229,7 +229,9 @@ class ClaudeClient:
             tool_results = [result.to_tool_result_block() for result in results]
 
             # Add assistant response and tool results to messages
-            messages.append({"role": "assistant", "content": response.content})
+            # Convert ContentBlock objects to dicts for serialization
+            assistant_content = [block.model_dump() for block in response.content]
+            messages.append({"role": "assistant", "content": assistant_content})
             messages.append({"role": "user", "content": tool_results})
 
         # Max iterations reached - return whatever we have
