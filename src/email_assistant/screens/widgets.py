@@ -176,6 +176,14 @@ class BaseListItem(ListItem):
         yield Static(self.get_line_2(), classes="item-line-2")
         yield Static(self.get_line_3(), classes="item-line-3")
 
+    def refresh_content(self) -> None:
+        """Update the displayed content after index change."""
+        lines = list(self.query(Static))
+        if len(lines) >= 3:
+            lines[0].update(self.get_line_1())
+            lines[1].update(self.get_line_2())
+            lines[2].update(self.get_line_3())
+
     def get_line_1(self) -> str:
         """Override to provide first line (sender/title)."""
         return f"[{self.index + 1}] Item"
@@ -384,9 +392,10 @@ class BaseListScreen(Screen, Generic[T], BackgroundTaskMixin):
         This method:
         1. Removes the item from self.items
         2. Removes the ListItem widget from ListView
-        3. Adjusts selection if needed
-        4. Updates title count
-        5. Handles empty list case
+        3. Updates indices on remaining widgets
+        4. Adjusts selection if needed
+        5. Updates title count
+        6. Handles empty list case
         """
         # Pop from items list
         removed_item = self.items.pop(index)
@@ -396,6 +405,14 @@ class BaseListScreen(Screen, Generic[T], BackgroundTaskMixin):
         list_items = list(items_list.children)
         if 0 <= index < len(list_items):
             list_items[index].remove()
+
+        # Update indices only on widgets after the removed one (they shifted down)
+        remaining_items = list(items_list.children)
+        for i in range(index, len(remaining_items)):
+            widget = remaining_items[i]
+            if isinstance(widget, BaseListItem):
+                widget.index = i
+                widget.refresh_content()
 
         # Adjust selection
         if self.items:
