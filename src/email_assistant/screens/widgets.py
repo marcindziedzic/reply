@@ -403,16 +403,20 @@ class BaseListScreen(Screen, Generic[T], BackgroundTaskMixin):
         # Remove widget from ListView
         items_list = self.query_one(f"#{self.LIST_ID}", ListView)
         list_items = list(items_list.children)
+        removed_widget = None
         if 0 <= index < len(list_items):
-            list_items[index].remove()
+            removed_widget = list_items[index]
+            removed_widget.remove()
 
-        # Update indices only on widgets after the removed one (they shifted down)
-        remaining_items = list(items_list.children)
-        for i in range(index, len(remaining_items)):
-            widget = remaining_items[i]
+        # Update indices on remaining widgets (remove() is async, so widget still in children)
+        new_index = 0
+        for widget in items_list.children:
+            if widget is removed_widget:
+                continue  # Skip the removed widget
             if isinstance(widget, BaseListItem):
-                widget.index = i
+                widget.index = new_index
                 widget.refresh_content()
+            new_index += 1
 
         # Adjust selection
         if self.items:
