@@ -207,24 +207,31 @@ class RemindersScreen(BaseListScreen[Reminder]):
                 new_date, new_hour = result
                 # Index was captured before dialog - get reminder if still valid
                 if index < len(self.items):
-                    reminder = self.items[index]
+                    today = date.today()
 
-                    # Optimistically update reminder in memory
-                    new_datetime = datetime.combine(new_date, time(hour=new_hour))
-                    reminder.scheduled_datetime = new_datetime
-                    reminder.is_outdated = False
+                    if new_date == today:
+                        # Rescheduled for today - update in place
+                        reminder = self.items[index]
 
-                    # Update status based on new time
-                    now = datetime.now()
-                    if new_datetime < now:
-                        reminder.status = ReminderStatus.OVERDUE
-                    elif (new_datetime - now).total_seconds() < 3600:
-                        reminder.status = ReminderStatus.UPCOMING
+                        # Optimistically update reminder in memory
+                        new_datetime = datetime.combine(new_date, time(hour=new_hour))
+                        reminder.scheduled_datetime = new_datetime
+                        reminder.is_outdated = False
+
+                        # Update status based on new time
+                        now = datetime.now()
+                        if new_datetime < now:
+                            reminder.status = ReminderStatus.OVERDUE
+                        elif (new_datetime - now).total_seconds() < 3600:
+                            reminder.status = ReminderStatus.UPCOMING
+                        else:
+                            reminder.status = ReminderStatus.FUTURE
+
+                        # Update the list item display
+                        self._refresh_list_item_display(index)
                     else:
-                        reminder.status = ReminderStatus.FUTURE
-
-                    # Update the list item display
-                    self._refresh_list_item_display(index)
+                        # Rescheduled for another day - remove from list
+                        reminder = self._remove_item_optimistically(index)
 
                     def do_reschedule():
                         service = get_reminder_service()
