@@ -1,7 +1,7 @@
 claude:
   api_key: sk-ant-...  # Claude API key from https://console.anthropic.com/
   project_id: proj_... # Project ID from Claude Projects (optional, but recommended)
-  model: claude-sonnet-4-20250514
+  model: claude-sonnet-5
 
 gmail:
   credentials_file: credentials.json  # OAuth client from Google Cloud Console

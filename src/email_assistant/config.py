@@ -136,7 +136,7 @@ class ClaudeConfig:
 
     api_key: str = ""
     project_id: str = ""
-    model: str = "claude-sonnet-4-20250514"
+    model: str = "claude-sonnet-5"
 
 
 @dataclass
@@ -280,7 +280,7 @@ class Config:
             claude=ClaudeConfig(
                 api_key=claude_data.get("api_key", ""),
                 project_id=claude_data.get("project_id", ""),
-                model=claude_data.get("model", "claude-sonnet-4-20250514"),
+                model=claude_data.get("model", "claude-sonnet-5"),
             ),
             gmail=GmailConfig(
                 credentials_file=gmail_data.get("credentials_file", "credentials.json"),

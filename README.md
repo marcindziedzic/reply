@@ -163,7 +163,7 @@ The `config.yaml` file contains all configuration options:
 claude:
   api_key: sk-ant-...           # Your Claude API key
   project_id: proj_...          # Optional: Claude Project ID
-  model: claude-sonnet-4-20250514
+  model: claude-sonnet-5
 
 gmail:
   credentials_file: credentials.json
