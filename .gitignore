@@ -39,6 +39,7 @@ token.json
 .reminder_state.json
 
 # Shared resources (downloaded per-user from team URL)
+context
 .shared_resources/
 
 # Project specific - credentials
