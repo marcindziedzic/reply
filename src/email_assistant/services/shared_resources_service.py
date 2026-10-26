@@ -3,11 +3,30 @@
 import io
 import json
 import zipfile
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Iterable, Optional
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
+
+
+@dataclass
+class ExportResult:
+    """Summary of a resources export."""
+
+    output_path: Path
+    # Archive path -> where the file came from ("shared" or "local")
+    files: dict[str, str] = field(default_factory=dict)
+    # Archive paths left out on purpose (e.g. data downloaded at startup)
+    skipped: list[str] = field(default_factory=list)
+
+    def count(self, directory: str, source: Optional[str] = None) -> int:
+        """Count packed files in a top-level directory, optionally by source."""
+        return sum(
+            1 for name, src in self.files.items()
+            if name.startswith(directory + "/") and (source is None or src == source)
+        )
 
 
 class SharedResourcesService:
@@ -19,6 +38,10 @@ class SharedResourcesService:
 
     SHARED_DIR_NAME = ".shared_resources"
     METADATA_FILE = ".metadata.json"
+    RESOURCE_DIRS = ("context", "queries", "snippets")
+    # Queries have no local override, so only these are read from the project root
+    LOCAL_OVERRIDE_DIRS = ("context", "snippets")
+    IGNORED_FILE_NAMES = {".ds_store", "thumbs.db", "desktop.ini"}
 
     def __init__(self, project_root: Optional[Path] = None):
         """Initialize the service.
@@ -39,6 +62,11 @@ class SharedResourcesService:
                 break
             current = parent
         return Path.cwd()
+
+    @property
+    def project_root(self) -> Path:
+        """Get the project root directory."""
+        return self._project_root
 
     @property
     def shared_dir(self) -> Path:
@@ -194,6 +222,77 @@ class SharedResourcesService:
             else:
                 item.unlink()
         path.rmdir()
+
+    def _is_ignored(self, path: Path, root: Path) -> bool:
+        """Check if a file should stay out of the export (hidden or OS junk)."""
+        if path.name.lower() in self.IGNORED_FILE_NAMES:
+            return True
+        return any(part.startswith(".") for part in path.relative_to(root).parts)
+
+    def export_to_zip(self, output_path: Path, exclude: Iterable[Path] = ()) -> ExportResult:
+        """Pack shared resources and local overrides into a zip.
+
+        The archive has context/, queries/ and snippets/ at its root - the same
+        layout download_and_extract() reads - so it can be uploaded to the
+        shared_resources URL as is. Files in local ./context/ and ./snippets/
+        replace the same paths from .shared_resources/.
+
+        Args:
+            output_path: Where to write the zip file.
+            exclude: Files to leave out (e.g. data downloaded at startup).
+
+        Returns:
+            ExportResult describing packed and skipped files.
+
+        Raises:
+            FileNotFoundError: If there are no resource files to export.
+        """
+        output_path = Path(output_path).resolve()
+        excluded = {Path(p).resolve() for p in exclude}
+        excluded.add(output_path)
+
+        result = ExportResult(output_path=output_path)
+        sources: dict[str, Path] = {}
+
+        # Shared first, then local, so local files win on the same archive path
+        layers = [(self.shared_dir, "shared"), (self._project_root, "local")]
+        for base, label in layers:
+            for directory in self.RESOURCE_DIRS:
+                if label == "local" and directory not in self.LOCAL_OVERRIDE_DIRS:
+                    continue
+                root = base / directory
+                if not root.is_dir():
+                    continue
+                for path in sorted(root.rglob("*")):
+                    if not path.is_file() or self._is_ignored(path, root):
+                        continue
+                    arcname = path.relative_to(base).as_posix()
+                    if path.resolve() in excluded:
+                        if arcname not in result.skipped:
+                            result.skipped.append(arcname)
+                        continue
+                    sources[arcname] = path
+                    result.files[arcname] = label
+
+        if not sources:
+            raise FileNotFoundError(
+                "No resources to export. Run --update-resources first "
+                "or add files to context/ or snippets/."
+            )
+
+        # Write to a temp file first so a failed export never leaves a broken zip
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = output_path.with_name(output_path.name + ".tmp")
+        try:
+            with zipfile.ZipFile(tmp_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+                for arcname in sorted(sources):
+                    zf.write(sources[arcname], arcname)
+            tmp_path.replace(output_path)
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink()
+
+        return result
 
     def has_shared_resources(self) -> bool:
         """Check if shared resources have been downloaded."""

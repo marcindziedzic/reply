@@ -12,6 +12,7 @@ Email Assistant is a terminal-based (TUI) email client for Gmail with AI-powered
 # Setup
 python run.py --configure        # Run setup wizard (create config.yaml)
 python run.py --update-resources # Download team shared resources
+python run.py --export-resources # Pack resources (shared + local overrides) into exports/*.zip
 python run.py --help             # Show help
 
 # Run
@@ -32,6 +33,7 @@ No test suite or linter configured.
 
 - `--configure` → runs setup wizard
 - `--update-resources` → downloads shared resources from URL
+- `--export-resources [PATH]` → zips `.shared_resources/` + local `context/`, `snippets/` (skips `downloads` targets)
 - No args → runs app (requires config.yaml)
 
 ### Global Singleton Clients
@@ -63,7 +65,7 @@ Screens use lazy loading - heavy imports deferred until screen is opened.
 - `context_service.py` - AI context files (instructions, tone of voice)
 - `query_service.py` - AI prompt templates
 - `snippet_service.py` - Reusable text templates
-- `shared_resources_service.py` - Download team resources from URL
+- `shared_resources_service.py` - Download team resources from URL, export them back to a zip
 - `reminder_service.py` - Email follow-up reminders with JSON persistence
 
 ### Resource Directories

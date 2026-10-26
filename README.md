@@ -152,6 +152,8 @@ pip install -e .
 python run.py                    # Run the application
 python run.py --configure        # Run setup wizard (create/update config.yaml)
 python run.py --update-resources # Download shared resources from configured URL
+python run.py --export-resources # Pack resources into a zip in exports/
+python run.py --export-resources team.zip  # ...or to a chosen file/folder
 python run.py --help             # Show help message
 ```
 
@@ -241,6 +243,20 @@ Then run:
 ```bash
 python run.py --update-resources
 ```
+
+### Editing and Publishing Resources
+
+The team admin can edit resources locally and publish them as a new zip:
+
+1. Edit files in `.shared_resources/` (or add local overrides in `context/` and `snippets/`)
+2. Run `python run.py --export-resources`
+3. Upload the zip from `exports/` to the location behind `shared_resources.url`
+
+The export merges `.shared_resources/` with local `context/` and `snippets/` (local files win)
+and keeps the layout `--update-resources` expects. Files listed under `downloads` in
+`config.yaml` (e.g. `components.csv`) are skipped because they are fetched at startup.
+
+> `--update-resources` replaces `.shared_resources/` entirely - export and upload your edits first.
 
 ## Usage
 

@@ -42,6 +42,9 @@ token.json
 context
 .shared_resources/
 
+# Resource packages created by --export-resources
+exports/
+
 # Project specific - credentials
 # Note: config.yaml, credentials.json, token.json are ignored above
 
